@@ -1,0 +1,128 @@
+// Implementation of Bellman-Ford using Dynamic Programming
+
+#include<iostream>
+#include <bits/stdc++.h>
+using namespace std;
+
+// Structure for edge and graph
+struct Edge {
+   int source, destination, weight;
+};
+struct Graph {
+   int V, E;
+   struct Edge* edge;
+};
+
+//structure for graph creation
+struct Graph* createGraph(int V, int E) {
+   struct Graph* graph = new Graph;
+   graph->V = V;
+   graph->E = E;
+   graph->edge = new Edge[E];
+   return graph;
+}
+
+//Bellman-ford function defination
+void BellmanFord(struct Graph* graph, int source) {
+   int V = graph->V;
+   int E = graph->E;
+   int dist[V];
+   for (int i = 0; i < V; i++)
+      dist[i] = INT_MAX;                  //intializing every node value to infinity
+      dist[source] = 0;                   //intialize source node to 0
+   for (int i = 1; i <= V - 1; i++) {     // matrix with rows=vertex-1  //relaxation upto V-1 times
+      for (int j = 0; j < E; j++) {       // scan each and every edge 
+         int u = graph->edge[j].source;   // take source 
+         int v = graph->edge[j].destination;  // take destination
+         int weight = graph->edge[j].weight;  // take weight for that edge 
+         //if (dist[u] != INT_MAX && dist[u] + weight < dist[v])   // relaxation formulae if(dist[u]+cost(u,v)<dist[v]) then dist[v]=dist[u]+cost(u,v)
+        if (dist[u] + weight < dist[v])
+         dist[v] = dist[u] + weight;
+      }
+   }
+// even after all relaxation still getting minimum value for some vertex dist them graph contains negative edge cycle
+   //code for negative weight cycle 
+   for (int i = 0; i < E; i++) {
+      int u = graph->edge[i].source;
+      int v = graph->edge[i].destination;
+      int weight = graph->edge[i].weight;
+      if (dist[u] != INT_MAX && dist[u] + weight < dist[v]) {
+         cout<<"Graph contains negative weight cycle";
+         return;
+      }
+   }
+
+   // print the result
+   cout<<"\nVertex:\t\t";
+   for (int i = 1; i <=V; ++i)
+      cout<<"\t"<<i;
+      cout<<"\nDistance From Source :";
+   for (int i = 1; i <=V; ++i)
+   cout<<"\t"<<dist[i];
+   return;
+}
+
+int main() {
+   int V = 7;
+   int E = 10;
+   struct Graph* graph = createGraph(V, E);
+   
+   //accepting the input 
+/*cout<<"Enter the values for the graphs";
+cout<<"Enter Source";
+cout<<"Enter Destination";
+cout<<"Enter weight";
+for(int i=0;i<E;i++)
+   {
+   cin<<graph->edge[i].source;
+   cin<<graph->edge[i].destination;
+   cin<<graph->edge[i].weight;
+   }*/
+
+int start;
+cout<<"Enter the starting-source";
+cin>>start;
+
+   graph->edge[0].source = 1;
+   graph->edge[0].destination = 2;
+   graph->edge[0].weight = 6;
+
+   graph->edge[1].source = 1;
+   graph->edge[1].destination = 3;
+   graph->edge[1].weight = 5;
+
+   graph->edge[2].source= 1;
+   graph->edge[2].destination = 4;
+   graph->edge[2].weight = 5;
+
+   graph->edge[3].source = 3;
+   graph->edge[3].destination = 2;
+   graph->edge[3].weight =-2;
+
+   graph->edge[4].source = 4;
+   graph->edge[4].destination = 3;
+   graph->edge[4].weight =-2;
+
+   graph->edge[5].source = 4;
+   graph->edge[5].destination = 6;
+   graph->edge[5].weight =-1;
+
+   graph->edge[6].source = 2;
+   graph->edge[6].destination = 5;
+   graph->edge[6].weight = -1;
+
+   graph->edge[7].source = 3;
+   graph->edge[7].destination = 5;
+   graph->edge[7].weight = -1;
+
+   graph->edge[8].source= 5;
+   graph->edge[8].destination= 7;
+   graph->edge[8].weight = 3;
+
+   graph->edge[9].source = 6;
+   graph->edge[9].destination = 7;
+   graph->edge[9].weight =3;
+
+   BellmanFord(graph, start);
+   return 0;
+}
